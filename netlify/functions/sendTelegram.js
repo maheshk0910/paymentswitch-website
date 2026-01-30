@@ -10,13 +10,16 @@ export async function handler(event) {
     const { name, email, phone, business, payments } = JSON.parse(event.body);
 
     const message = `
-📩 New Enquiry – Payment Switch UK
+🔔 *New Lead – PaymentSwitch*
 
-👤 Name: ${name}
-📧 Email: ${email}
-📞 Phone: ${phone}
-🏢 Business: ${business}
-💳 Accepting payments: ${payments}
+👤 *Name:* ${name}
+📧 *Email:* ${email}
+📞 *Phone:* ${phone}
+🏢 *Business Type:* ${business}
+💳 *Payments:* ${payments}
+
+🌐 Website: paymentswitch.co.uk
+🕒 Time: ${new Date().toLocaleString("en-GB")}
 `;
 
     const telegramResponse = await fetch(
@@ -26,13 +29,15 @@ export async function handler(event) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           chat_id: process.env.CHAT_ID,
-          text: message
+          text: message,
+          parse_mode: "Markdown"
         })
       }
     );
 
     if (!telegramResponse.ok) {
-      throw new Error("Telegram API error");
+      const errText = await telegramResponse.text();
+      throw new Error(errText);
     }
 
     return {
