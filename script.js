@@ -92,7 +92,8 @@ function scrollToTop() {
 // =====================================================
 // 7. FORM SUBMIT Emailjs & telegram 
 // =====================================================
-function handleSubmit(e) {
+async function handleSubmit(e) {
+ 
   e.preventDefault();
 
   const params = {
@@ -104,13 +105,22 @@ function handleSubmit(e) {
   };
 
   // 🔔 TELEGRAM ADMIN NOTIFICATION (via Netlify function)
-  fetch("/.netlify/functions/sendTelegram", {
+  try {
+  const tgRes = await fetch("/.netlify/functions/sendTelegram", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(params)
-  }).catch(err => {
-    console.error("Telegram notification failed:", err);
   });
+
+  if (!tgRes.ok) {
+    console.error("Telegram failed with status:", tgRes.status);
+  } else {
+    console.log("✅ Telegram notification sent");
+  }
+} catch (err) {
+  console.error("❌ Telegram notification failed:", err);
+}
+
 
   // ✅ Admin email
   emailjs.send(
@@ -420,3 +430,4 @@ window.addEventListener('load', () => {
 // END OF SCRIPT
 
 // =====================================================
+
