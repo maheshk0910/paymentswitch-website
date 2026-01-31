@@ -114,7 +114,7 @@ function handleSubmit(e) {
 
   // ✅ Admin email
   emailjs.send(
-    "service_np25j3r",
+    "service_d3pvldk",
     "template_hp1knth",
     params
   ).then(() => {
@@ -418,4 +418,5 @@ window.addEventListener('load', () => {
 
 // =====================================================
 // END OF SCRIPT
+
 // =====================================================
