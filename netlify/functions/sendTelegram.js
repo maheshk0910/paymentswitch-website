@@ -1,3 +1,6 @@
+// 🛡️ Simple in-memory rate limit
+const rateLimitMap = new Map();
+
 export async function handler(event) {
   if (event.httpMethod !== "POST") {
     return {
@@ -7,7 +10,45 @@ export async function handler(event) {
   }
 
   try {
-    const { name, email, phone, business, payments } = JSON.parse(event.body);
+  const body = JSON.parse(event.body);
+const { name, email, phone, business, payments } = body;
+
+// 🛑 Honeypot check (silently ignore bots)
+if (body.company) {
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ success: true })
+  };
+}
+
+    // 🛡️ RATE LIMIT START
+const ip =
+  event.headers["x-forwarded-for"] ||
+  event.headers["client-ip"] ||
+  "unknown";
+
+const now = Date.now();
+const windowMs = 10 * 60 * 1000; // 10 minutes
+const maxRequests = 5;
+
+if (!rateLimitMap.has(ip)) {
+  rateLimitMap.set(ip, []);
+}
+
+const timestamps = rateLimitMap
+  .get(ip)
+  .filter(ts => now - ts < windowMs);
+
+if (timestamps.length >= maxRequests) {
+  return {
+    statusCode: 429,
+    body: JSON.stringify({ error: "Too many requests" })
+  };
+}
+
+timestamps.push(now);
+rateLimitMap.set(ip, timestamps);
+// 🛡️ RATE LIMIT END
 
     const message = `
 🔔 *New Lead – PaymentSwitch*
@@ -53,3 +94,4 @@ export async function handler(event) {
     };
   }
 }
+
