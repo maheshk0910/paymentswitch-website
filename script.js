@@ -97,12 +97,13 @@ async function handleSubmit(e) {
   e.preventDefault();
 
   const params = {
-    name: document.getElementById('name').value,
-    email: document.getElementById('email').value,
-    phone: document.getElementById('phone').value,
-    business: document.getElementById('business-type').value,
-    payments: document.querySelector('input[name="payments"]:checked').value
-  };
+  name: document.getElementById('name').value,
+  email: document.getElementById('email').value,
+  phone: document.getElementById('phone').value,
+  business: document.getElementById('business-type').value,
+  payments: document.querySelector('input[name="payments"]:checked').value
+};
+
 
   // 🔔 TELEGRAM ADMIN NOTIFICATION (via Netlify function)
   try {
@@ -430,4 +431,5 @@ window.addEventListener('load', () => {
 // END OF SCRIPT
 
 // =====================================================
+
 
